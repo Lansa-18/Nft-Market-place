@@ -1,0 +1,13 @@
+{
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "connect-src http://*.localhost:3000/  https://*.dial.to/ https://proxy.dial.to/; img-src http: https://*.dial.to/ https://proxy.dial.to/;"
+        }
+      ]
+    }
+  ]
+}
