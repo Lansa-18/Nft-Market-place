@@ -19,7 +19,7 @@ export default function Main() {
 
   // const canvasAdapter: any = useCanvasWallet()
 
-  const shyft = new ShyftSdk({ apiKey: 'YJ4c0DNAEQK90NJn', network: Network.Mainnet });
+  const shyft = new ShyftSdk({ apiKey: '', network: Network.Mainnet });
 
   const [userNfts, setUserNfts] = useState<any>([]);
 
