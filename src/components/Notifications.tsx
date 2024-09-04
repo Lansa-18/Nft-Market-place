@@ -1,16 +1,29 @@
-import { FiBell, FiShoppingBag } from "react-icons/fi";
+import { useState } from "react";
+import useCanvasWallet from "./CanvasWalletAdapter";
+
 
 export default function Notifications() {
+  const anchorWallet = useCanvasWallet()
+  const [connected, setConnected] = useState(false);
+
+  const connectWallet = async () => {
+    if (anchorWallet) {
+      try {
+        const response = await anchorWallet.connectWallet()
+        console.log(response);
+        setConnected(true);
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      console.error('Canvas Wallet not initialized');
+    }
+  }
   return (
-    <div className='flex items-center gap-5'>
-        <article className='border-2 border-[#e1e4ec] p-3 rounded-lg relative'>
-            <FiShoppingBag className='text-[2rem] text-[#bbbdc7]' />
-            <div className="bg-red-600 rounded-full w-[.7rem] h-[.7rem] absolute top-[.65rem] left-[2.1rem]"></div>
-        </article>
-        <article className='border-2 border-[#e1e4ec] p-3 rounded-lg relative'>
-            <FiBell className='text-[2rem] text-[#bbbdc7]'/>
-            <div className="bg-red-600 rounded-full w-[.7rem] h-[.7rem] absolute top-[.65rem] left-[1.9rem]"></div>
-        </article>
+    <div className='flex items-center'>
+      <button onClick={() => connectWallet()} className="text-white w-[200px] py-[1rem] rounded-xl text-[1.5rem] font-semibold bg-[#e53d75] btn btn-secondary">
+        {connected ? "Connected" : "Connect Wallet"}
+      </button>
     </div>
   )
 }

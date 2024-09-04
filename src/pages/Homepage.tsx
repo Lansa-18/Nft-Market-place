@@ -1,8 +1,5 @@
-// import { Link } from "react-router-dom";
-
 import Main from "../components/Main";
 import Navbar from "../components/Navbar";
-import Navigation from "../components/Navigation";
 
 export default function Homepage() {
   return (
@@ -11,7 +8,7 @@ export default function Homepage() {
         <Navbar />
         <Main />
       </div>
-      <Navigation type={'home'} />
+      {/* <Navigation type={'home'} /> */}
     </>
   );
 }

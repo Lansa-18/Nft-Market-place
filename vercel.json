@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "connect-src http://*.localhost:3000/  https://*.dial.to/ https://proxy.dial.to/; img-src http: https://*.dial.to/ https://proxy.dial.to/;"
+          "value": "connect-src http://*.localhost:3000/ https://api.solana.fm/ https://cors-anywhere.herokuapp.com/* https://rpc.shyft.to  https://api.shyft.to/sol/ https://api.mainnet-beta.solana.com/ https://*.dial.to/ https://proxy.dial.to/ https://api-mainnet.magiceden.dev/*; img-src http: https://*.dial.to/ https://proxy.dial.to/ https://arweave.net https://creator-hub-prod https://img-cdn.magiceden.dev/ ;"
         }
       ]
     }
