@@ -14,7 +14,6 @@ export default function PersonalItemDisplay({ userNfts, setShowPersonalNFTs }: a
         {userNfts.length > 0 ?
           userNfts.map((nft: any, index: number) => {
             return (
-
               <article key={index} onClick={() => {
                 setSelectedNft(nft)
                 setShowItem(true);

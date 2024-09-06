@@ -10,17 +10,19 @@ export default function NftDetails({ nft }: any) {
   const walletAddress = useCanvasWallet().walletAddress;
 
   const listItem = async () => {
-    console.log(nft, walletAddress)
-    const { encoded_transaction } = await shyft.marketplace.listing.list(
-      {
-        marketplaceAddress: MARKETID,
-        nftAddress: nft.mint,
-        price: 50,
-        sellerWallet: walletAddress,
-        isGasLess: true,
-      }
+    console.log(nft.mint)
+    const { encoded_transaction } = await shyft.marketplace.listing.list({
+      marketplaceAddress: MARKETID,
+      nftAddress: nft.mint,
+      price: 50,
+      sellerWallet: walletAddress,
+      isGasLess: false,
+      serviceCharge: {
+        receiver: walletAddress,
+        amount: 0.001
+      },
+    })
 
-    )
 
     console.log(encoded_transaction);
   }
