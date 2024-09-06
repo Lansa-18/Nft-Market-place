@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import useCanvasWallet from "./CanvasWalletAdapter";
 import CreateMarketPlace from "./CreateMarketPlace";
 import ItemDisplay from "./ItemDisplay";
-import PersonalItemDisplay from "./PersonalItemDisplay";
-import { Network, ShyftSdk } from "@shyft-to/js";
+import { Link } from "react-router-dom";
 
 export default function Main() {
   const [startMint, _setStartMint] = useState(false)
@@ -15,13 +14,14 @@ export default function Main() {
     type: ''
   })
 
-  const walletAddress = useCanvasWallet().walletAddress;
+  const walletAddress = localStorage.getItem('walletAddress') || useCanvasWallet().walletAddress;
 
   // const canvasAdapter: any = useCanvasWallet()
 
-  const shyft = new ShyftSdk({ apiKey: '', network: Network.Mainnet });
 
-  const [userNfts, setUserNfts] = useState<any>([]);
+  const shyft = useCanvasWallet().marketSDK;
+
+  const [_userNfts, setUserNfts] = useState<any>([]);
 
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export default function Main() {
       setUserNfts(nfts);
 
     })()
-  }, []);
+  }, [walletAddress]);
 
 
   // const anchorProvider = canvasAdapter && new AnchorProvider(connection, canvasAdapter, {});
@@ -86,14 +86,12 @@ export default function Main() {
 
         <div className="flex flex-row  p-2 justify-center gap-x-2">
 
-          <button onClick={() => { }} className="p-3 shadow text-black rounded-xl text-[1.5rem] font-semibold bg-[#fdefd7] btn btn-secondary">
-            Create Your Own Market Place
-          </button>
-
-          <button onClick={() => { }} className="p-3 rounded-xl text-[1.5rem] font-semibold bg-[#e53d75] btn btn-secondary">
-            Your Items
-          </button>
-
+          <Link to="/market-place" className="p-3  shadow text-white rounded-xl text-[1.5rem] font-semibold hover:bg-[#e53d75]/90 bg-[#e53d75]">
+            Enter Market Place
+          </Link>
+          {/* <button onClick={() => setShowMarketPlace(true)} className="p-3 shadow text-black rounded-xl text-[1.5rem] font-semibold bg-[#fdefd7] btn btn-secondary">
+            Create Your's
+          </button> */}
         </div>
       </div>
       {/* Search Input */}
@@ -111,7 +109,7 @@ export default function Main() {
       }
 
       {showMarketPlace &&
-        <CreateMarketPlace setShowMarketPlace={setShowMarketPlace} />
+        <CreateMarketPlace setShowMarketPlace={setShowMarketPlace} shyft={shyft} />
       }
 
       {/* Delivery Location
@@ -133,8 +131,7 @@ export default function Main() {
         <></>
       }
 
-
-      <PersonalItemDisplay userNfts={userNfts} />
+      {/* <PersonalItemDisplay userNfts={userNfts} /> */}
 
     </main>
   );

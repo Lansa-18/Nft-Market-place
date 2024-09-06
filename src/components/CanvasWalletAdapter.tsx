@@ -3,9 +3,10 @@
 import { useState, useContext, createContext, useEffect, ReactNode } from 'react';
 import { CanvasClient } from '@dscvr-one/canvas-client-sdk';
 import { registerCanvasWallet } from '@dscvr-one/canvas-wallet-adapter';
-import { Connection, PublicKey, Transaction } from '@solana/web3.js';
+import { Connection, PublicKey, Transaction, clusterApiUrl } from '@solana/web3.js';
 import base58 from "bs58";
-import { RPC } from '../requestsHandler';
+import { Network, ShyftSdk } from '@shyft-to/js';
+import { API_KEY } from '../requestsHandler';
 
 
 
@@ -14,7 +15,9 @@ interface WalletContextType {
     walletAddress: string | null;
     walletIcon: string | null;
     signTransaction: (transaction: Transaction) => Promise<string | null>;
+    signCodedTx: (encodedtx: any) => Promise<string | null>
     iframe: boolean;
+    marketSDK: ShyftSdk;
     userInfo: { id: string; username: string; avatar?: string | undefined; } | undefined;
     content: { id: string; portalId: string; portalName: string; } | undefined
 }
@@ -26,7 +29,7 @@ const SOLANA_MAINNET_CHAIN_ID = "solana:101"; // Solana mainnet chain ID
 
 export const CanvasWalletProvider = ({ children }: { children: ReactNode }) => {
     const [canvasClient, setCanvasClient] = useState<CanvasClient | null>(null);
-    const [walletAddress, setWalletAddress] = useState<string | null>(null);
+    const [walletAddress, setWalletAddress] = useState<string | null>(localStorage.getItem('walletAddress') || null);
     const [walletIcon, setWalletIcon] = useState<string | null>(null);
     const [iframe, setIframe] = useState<boolean>(false);
     const [userInfo, setUserInfo] = useState<{ id: string; username: string; avatar?: string | undefined; }>();
@@ -56,9 +59,11 @@ export const CanvasWalletProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     const connectWallet = async () => {
+
         if (canvasClient) {
             try {
                 const info = await canvasClient.ready();
+
                 if (info?.untrusted) {
                     const { user, content } = info.untrusted;
                     setUserInfo(user);
@@ -73,15 +78,16 @@ export const CanvasWalletProvider = ({ children }: { children: ReactNode }) => {
 
                 if (response?.untrusted?.success) {
                     setWalletAddress(response.untrusted.address);
+                    localStorage.setItem('walletAddress', response.untrusted.address);
                     setWalletIcon(response.untrusted.walletIcon);
                     console.log('Wallet connected:', response.untrusted.address);
-
-
                 } else {
                     console.error('Failed to connect wallet');
                 }
 
             } catch (error) {
+                console.log(error);
+
                 console.error('Error connecting wallet:', error);
             }
         } else {
@@ -96,7 +102,7 @@ export const CanvasWalletProvider = ({ children }: { children: ReactNode }) => {
         }
 
         try {
-            const network = RPC || "https://api.devnet.solana.com/";
+            const network = clusterApiUrl('mainnet-beta') || "https://api.devnet.solana.com/";
             const connection = new Connection(network, 'confirmed');
 
             // Fetch the latest blockhash
@@ -132,14 +138,61 @@ export const CanvasWalletProvider = ({ children }: { children: ReactNode }) => {
         return null;
     };
 
+    const signCodedTx = async (encodedtx: any) => {
+        if (!canvasClient || !walletAddress) {
+            console.error('CanvasClient or walletAddress is not available');
+            return null;
+        }
+
+        try {
+
+            function base64ToUint8Array(base64) {
+                const binaryString = atob(base64); // Decode Base64 string to binary string
+                const length = binaryString.length;
+                const bytes = new Uint8Array(length); // Create a Uint8Array
+
+                for (let i = 0; i < length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i); // Assign byte by byte
+                }
+
+                return bytes;
+            }
+            const uint8ArraySt = base64ToUint8Array(encodedtx);
+
+            const base58Tx = base58.encode(uint8ArraySt)
+
+            // Sign and send the transaction via canvasClient
+            const results = await canvasClient.signAndSendTransaction({
+                unsignedTx: base58Tx,
+                awaitCommitment: "confirmed",
+                chainId: SOLANA_MAINNET_CHAIN_ID,
+            });
+
+            if (results?.untrusted?.success) {
+                console.log('Transaction signed:', results.untrusted.signedTx);
+                return results.untrusted.signedTx;
+            } else {
+                console.error('Failed to sign transaction');
+            }
+        } catch (error) {
+            console.error('Error signing transaction:', error);
+        }
+
+        return null;
+    };
+
+    const marketSDK = new ShyftSdk({ apiKey: API_KEY, network: Network.Mainnet });
+
 
     const value: WalletContextType = {
         connectWallet,
         walletAddress,
         walletIcon,
         signTransaction,
+        signCodedTx,
         iframe,
         userInfo,
+        marketSDK,
         content
     };
 

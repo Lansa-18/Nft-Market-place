@@ -31,9 +31,6 @@ export default function ItemDisplay() {
                   View
                 </button>
               </div>
-              {/* <div className="absolute top-[.5rem] right-[.5rem] bg-[#fdeaec] text-center text-[1.5rem] font-bold rounded-full w-[40%] text-[#f86f7f]">
-                5% Off
-              </div> */}
             </article>
           </Link>
         )

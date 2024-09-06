@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { isIframe } from "./canvas-adapter";
 import { CanvasClient } from "@dscvr-one/canvas-client-sdk";
 import { CanvasWalletProvider } from "./components/CanvasWalletAdapter";
+import MarketPlacePage from "./pages/MarketPlace";
 
 export default function App() {
   const iframe = isIframe();
@@ -28,27 +29,31 @@ export default function App() {
       resizeObserver.observe(containerRef.current);
     }
 
-    return () => {
-      if (containerRef.current) {
-        resizeObserver.unobserve(containerRef.current);
-      }
-    };
+    // return () => {
+    //   if (containerRef.current) {
+    //     resizeObserver.unobserve(containerRef.current);
+    //   }
+    // };
   }, [])
 
   return (
-    <CanvasWalletProvider>
-      <div ref={containerRef} className="bg-[#42a3ba]">
-        <BrowserRouter>
+    <div ref={containerRef} style={{
+      margin: '0 auto',
+      width: '100%'
+    }} className="bg-[#42a3ba]">
+      <BrowserRouter>
+        <CanvasWalletProvider>
           <Routes>
             <Route index element={<Homepage />} />
-            <Route path="checkout" element={<Checkout />} />
+            <Route path="market-place" element={<MarketPlacePage />} />
+            <Route path="my-nfts" element={<Checkout />} />
             <Route path="iteminfo" element={<ItemInfos />} />
             <Route path="mycart" element={<MyCart />} />
             <Route path="checkout" element={<Checkout />} />
           </Routes>
-        </BrowserRouter>
-      </div>
-    </CanvasWalletProvider>
+        </CanvasWalletProvider>
+      </BrowserRouter>
+    </div>
 
   )
 }
