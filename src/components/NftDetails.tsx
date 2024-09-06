@@ -5,7 +5,7 @@ import { MARKETID } from "../requestsHandler";
 
 export default function NftDetails({ nft }: any) {
   const [showInputs, setShowInputs] = useState(false);
-  const [fee, setFee] = useState('');
+  const [_fee, setFee] = useState('');
   const shyft = useCanvasWallet().marketSDK;
   const walletAddress = useCanvasWallet().walletAddress;
 
