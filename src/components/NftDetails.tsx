@@ -52,6 +52,8 @@ export default function NftDetails({ nft }: any) {
               placeholder="enter transaction fee"
               onChange={(e: any) => setFee(e.target.value)}
             />
+
+
           </div>
         }
         <button onClick={() => showInputs ? listItem() : setShowInputs(true)
