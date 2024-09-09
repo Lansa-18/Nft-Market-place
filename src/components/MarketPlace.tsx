@@ -5,6 +5,7 @@ import useCanvasWallet from "./CanvasWalletAdapter";
 // import ItemDisplay from "./ItemDisplay";
 import PersonalItemDisplay from "./PersonalItemDisplay";
 import { MARKETID } from "../requestsHandler";
+
 export default function MarketPlace() {
   const [notify, setNotify] = useState({
     message: '',
