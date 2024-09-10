@@ -16,9 +16,6 @@ export default function Main() {
 
   const walletAddress = localStorage.getItem('walletAddress') || useCanvasWallet().walletAddress;
 
-  // const canvasAdapter: any = useCanvasWallet()
-
-
   const shyft = useCanvasWallet().marketSDK;
 
   const [_userNfts, setUserNfts] = useState<any>([]);
@@ -39,9 +36,6 @@ export default function Main() {
       return;
     }
     (async () => {
-      // const balance = await shyft.wallet.getBalance({ wallet: '13dqNw1su2UTYPVvqP6ahV8oHtghvoe2k2czkrx9uWJZ' })
-      // console.log('Balance:', balance);
-
       const nfts = await shyft.nft.compressed.readAll({
         walletAddress: walletAddress
       })
@@ -50,19 +44,6 @@ export default function Main() {
     })()
   }, [walletAddress]);
 
-
-  // const anchorProvider = canvasAdapter && new AnchorProvider(connection, canvasAdapter, {});
-  // if (!anchorProvider) {
-  //   return;
-  // }
-  // const programId = new PublicKey("H6PPjzSYdCTwCN2KEU6iumCDzUZsTS5fxQh6zFerEfQN");
-  // const program = new Program<MarketplaceIDL>(IDL, programId, anchorProvider);
-
-  // const fetchItems = async () => {
-  //   let listitems = await program.account.listing.all();
-  //   setNftItems(listitems);
-
-  // }
   return (
 
     <main className="pt-[3rem] pb-[5rem] text-white">
@@ -82,27 +63,14 @@ export default function Main() {
           Create custom marketplace for your NFT's
         </p>
 
-        {/* <p className="text-[18px] mb-3">CA:H6PPjzSYdCTwCN2KEU6iumCDzUZsTS5fxQh6zFerEfQN</p> */}
-
         <div className="flex flex-row  p-2 justify-center gap-x-2">
 
           <Link to="/market-place" className="p-3  shadow text-white rounded-xl text-[1.5rem] font-semibold hover:bg-[#e53d75]/90 bg-[#e53d75]">
             Enter Market Place
           </Link>
-          {/* <button onClick={() => setShowMarketPlace(true)} className="p-3 shadow text-black rounded-xl text-[1.5rem] font-semibold bg-[#fdefd7] btn btn-secondary">
-            Create Your's
-          </button> */}
         </div>
       </div>
-      {/* Search Input */}
-      {/* <article className="flex gap-3 w-full items-center border border-[#dfe2ec] py-[1rem] px-[1.5rem] rounded-2xl">
-        <CiSearch className="text-[3rem] text-[#a4a8b5]" />
-        <input
-          type="text"
-          placeholder="looking for items?"
-          className=" text-[1.2rem] input bg-black text-dark input-bordered w-full outline-none border-[#dfe2ec]"
-        />
-      </article> */}
+
 
       {startMint &&
         <NFTMint />
@@ -112,26 +80,12 @@ export default function Main() {
         <CreateMarketPlace setShowMarketPlace={setShowMarketPlace} shyft={shyft} />
       }
 
-      {/* Delivery Location
-      <article className="mt-7 flex items-center gap-2">
-        <FaMapMarkerAlt className="text-[2rem] text-orange-600" />
-        <p className="text-[1.2rem]">
-          <span className="text-[#abafbb]">Deliver to </span>
-          JI.Rose No. 123 Block A, Cipete Sub-District.
-        </p>
-      </article> */}
-
-      {/* Categories */}
-      {/* <Categories /> */}
-
 
       {nftItem.length > 0 ?
         <ItemDisplay />
         :
         <></>
       }
-
-      {/* <PersonalItemDisplay userNfts={userNfts} /> */}
 
     </main>
   );

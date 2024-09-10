@@ -1,10 +1,12 @@
 
 import { useEffect, useState } from "react";
 import useCanvasWallet from "./CanvasWalletAdapter";
-// import CreateMarketPlace from "./CreateMarketPlace";
-// import ItemDisplay from "./ItemDisplay";
 import PersonalItemDisplay from "./PersonalItemDisplay";
-import { MARKETID } from "../requestsHandler";
+import { fetchListings, fetchUserListings } from "../requestsHandler/requestsItems";
+import NftDetails from "./NftDetails";
+import { Helius } from "helius-sdk";
+
+const helius = new Helius("61c2ee69-b100-45d8-81e2-488dc6c4a5f0");
 
 export default function MarketPlace() {
   const [notify, setNotify] = useState({
@@ -12,13 +14,17 @@ export default function MarketPlace() {
     type: ''
   })
 
-  const walletAddress = localStorage.getItem('walletAddress') || useCanvasWallet().walletAddress;
+  const canvas = useCanvasWallet()
+  const walletAddress = localStorage.getItem('walletAddress') || canvas.walletAddress;
 
-  const shyft = useCanvasWallet().marketSDK;
+  const shyft = canvas.marketSDK;
 
   const [userNfts, setUserNfts] = useState<any>([]);
   const [listings, setListings] = useState<any>([]);
   const [showPersonalNFTs, setShowPersonalNFTs] = useState(false);
+  const [activeTabs, setActiveTabs] = useState('marketItems');
+  const [showItem, setShowItem] = useState(false);
+  const [selectedNft, setSelectedNft] = useState<any>(null);
 
   useEffect(() => {
     if (!walletAddress) {
@@ -34,32 +40,79 @@ export default function MarketPlace() {
       }, 2000)
       return;
     }
-    (async () => {
-      const listings = await shyft.marketplace.listing.active({ marketplaceAddress: MARKETID })
-      setListings(listings);
-    })()
   }, [walletAddress]);
 
+  useEffect(() => {
+    (async () => {
+      if (!walletAddress) {
+        let canvasItem = await canvas.connectWallet()
+        if (canvasItem) {
+          if (activeTabs == "marketItems") {
+            fetchMarketListings()
+          } else if (activeTabs == "personalItems") {
+            fetchPersonalListings()
+          }
+        }
+      } else {
+        if (activeTabs == "marketItems") {
+          fetchMarketListings()
+        } else if (activeTabs == "personalItems") {
+          fetchPersonalListings()
+        }
+      }
+    })()
+  }, [activeTabs])
 
   const getUserNFTs = async () => {
-    const nfts = await shyft.nft.compressed.readAll({
-      walletAddress: walletAddress
-    })
-    setUserNfts(nfts);
+    if (!walletAddress) {
+      let canvasItem = await canvas.connectWallet()
+      if (canvasItem) {
+        const nfts = await shyft.nft.compressed.readAll({
+          walletAddress: walletAddress
+        })
+        setUserNfts(nfts);
+      }
+    } else {
+      const nfts = await shyft.nft.compressed.readAll({
+        walletAddress: walletAddress
+      })
+      setUserNfts(nfts);
+    }
+
+
   }
 
-  // const anchorProvider = canvasAdapter && new AnchorProvider(connection, canvasAdapter, {});
-  // if (!anchorProvider) {
-  //   return;
-  // }
-  // const programId = new PublicKey("H6PPjzSYdCTwCN2KEU6iumCDzUZsTS5fxQh6zFerEfQN");
-  // const program = new Program<MarketplaceIDL>(IDL, programId, anchorProvider);
+  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  // const fetchItems = async () => {
-  //   let listitems = await program.account.listing.all();
-  //   setNftItems(listitems);
+  const fetchMarketListings = async () => {
+    const getMarketListings = await fetchListings();
+    console.log(getMarketListings)
 
-  // }
+
+    const items = [];
+    for (const item of getMarketListings.data) {
+      await delay(500); // Adjust the delay time (500ms in this example)
+      const downloaded = await shyft.nft.compressed.read({ mint: item.asset_mint });
+
+      const sentItem = { nftData: downloaded, marketplaceData: item };
+      items.push(sentItem);
+    }
+    setListings(items);
+  }
+
+  const fetchPersonalListings = async () => {
+    const getMarketListings = await fetchUserListings(walletAddress);
+    const items = [];
+    for (const item of getMarketListings.data) {
+      await delay(500); // Adjust the delay time (500ms in this example)
+      const downloaded = await shyft.nft.compressed.read({ mint: item.asset_mint });
+
+      const sentItem = { nftData: downloaded, marketplaceData: item };
+      items.push(sentItem);
+    }
+    setListings(items);
+  }
+  console.log(selectedNft);
   return (
 
     <main className="pt-[3rem] pb-[5rem] text-white">
@@ -74,41 +127,73 @@ export default function MarketPlace() {
 
       <div className="mb-3 flex flex-col  space-y-1">
         <div className="flex flex-row gap-x-3 font-bold text-[12px] divide-x">
-          <p className="px-2 cursor-pointer hover:underline ">
+          <p onClick={() => setActiveTabs('marketItems')} className="px-2 cursor-pointer hover:underline ">
             Listings
           </p>
-          <p className="px-2 cursor-pointer hover:underline">
+          <p onClick={() => setActiveTabs('personalItems')} className="px-2 cursor-pointer hover:underline">
             My Listings
           </p>
-          <p className="px-2 cursor-pointer hover:underline">
-            New Item
+          <p onClick={() => {
+            setShowPersonalNFTs(true);
+            getUserNFTs();
+            console.log('clicked');
+          }} className="px-2 cursor-pointer hover:underline">
+            List New Items
           </p>
         </div>
         <hr />
+        {listings.length ?
+          <section className="top-0 h-fit overflow-scroll  left-0 p-2 grid grid-cols-4 gap-4 mt-[3rem]">
+            {
+              listings.map((nft: any, index: number) => {
+                return (
+                  <article key={index} onClick={() => {
+                    setSelectedNft(nft)
+                    setShowItem(true);
+                  }} className="relative bg-black/80 rounded-xl border-[#e6e9f0] overflow-hidden flex flex-col">
+                    <div className="w-[100%] overflow-hidden h-[100px]" style={{ objectFit: 'cover' }}>
+                      <img className="w-[100%] h-[100%]" src={nft.nftData.image_uri} style={{ objectFit: 'cover' }} alt="nft1-icon" />
+                    </div>
+                    <div className="w-[100%] p-2 py-3 flex flex-row justify-between">
+                      <p className="text-[#fdefd8] text-[8px] font-bold">{nft.nftData.name}</p>
+                    </div>
+                    <div className="p-2 w-[100%] flex justify-center items-center">
+                      <button onClick={() => {
+                        setSelectedNft(nft)
+                        setShowItem(true);
+                      }} className="p-2 text-[10px] rounded-xl w-10/12 text-[1.5rem] font-semibold bg-[#e53d75] btn btn-secondary">
+                        Buy {nft.marketplaceData.fee} SOL
+                      </button>
+                    </div>
+                  </article>
+                )
+              })
+            }
 
-        {listings.length ? <div></div> : <div className="text-[24px] h-[300px] flex flex-col justify-center items-center">No Items Listed Yet!
-          <button onClick={() => {
-            setShowPersonalNFTs(true);
-            getUserNFTs();
+          </section>
 
-          }} className="p-3 shadow text-black rounded-xl text-[1.5rem] font-semibold bg-[#fdefd7] btn btn-secondary">
-            List New Items
-          </button>
-        </div>}
+          : <div className="text-[24px] h-[300px] flex flex-col justify-center items-center">No Items Listed Yet!
+            <button onClick={() => {
+              setShowPersonalNFTs(true);
+              getUserNFTs();
+            }} className="p-3 shadow text-black rounded-xl text-[1.5rem] font-semibold bg-[#fdefd7] btn btn-secondary">
+              List New Items
+            </button>
+          </div>
+        }
       </div>
-      {/* Search Input */}
-      {/* <article className="flex gap-3 w-full items-center border border-[#dfe2ec] py-[1rem] px-[1.5rem] rounded-2xl">
-        <CiSearch className="text-[3rem] text-[#a4a8b5]" />
-        <input
-          type="text"
-          placeholder="looking for items?"
-          className=" text-[1.2rem] input bg-black text-dark input-bordered w-full outline-none border-[#dfe2ec]"
-        />
-      </article> */}
-
-
       {showPersonalNFTs &&
         <PersonalItemDisplay userNfts={userNfts} setShowPersonalNFTs={setShowPersonalNFTs} />
+      }
+
+      {showItem &&
+        <div className="absolute h-fit w-screen top-0 left-0 bg-black/50 p-20 flex flex-row justify-center items-center">
+          <div className="h-[50%] w-[60%] relative -top-[20%] p-3 px-5 bg-black rounded-xl">
+            <p className="text-[30px] cursor-pointer" onClick={() => setShowItem(false)}>x</p>
+            <NftDetails nft={selectedNft?.nftData} buy={true} marketData={selectedNft?.marketplaceData} />
+          </div>
+
+        </div>
       }
     </main>
   );

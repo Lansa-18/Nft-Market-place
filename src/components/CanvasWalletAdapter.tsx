@@ -22,7 +22,7 @@ export function isVersionedTransaction(
 }
 
 interface WalletContextType {
-    connectWallet: () => Promise<void>;
+    connectWallet: () => Promise<boolean>;
     walletAddress: string | null;
     walletIcon: string | null;
     signTransaction: (transaction: any) => Promise<any | null>;
@@ -94,17 +94,22 @@ export const CanvasWalletProvider = ({ children }: { children: ReactNode }) => {
                     localStorage.setItem('walletAddress', response.untrusted.address);
                     setWalletIcon(response.untrusted.walletIcon);
                     console.log('Wallet connected:', response.untrusted.address);
+                    return true;
                 } else {
                     console.error('Failed to connect wallet');
+                    return false;
+
                 }
 
             } catch (error) {
                 console.log(error);
 
                 console.error('Error connecting wallet:', error);
+                return false;
             }
         } else {
             console.error('CanvasClient is not initialized');
+            return false;
         }
     };
 
@@ -115,13 +120,13 @@ export const CanvasWalletProvider = ({ children }: { children: ReactNode }) => {
         }
 
         try {
-            const network = RPC;
-            const connection = new Connection(network, 'confirmed');
+            // const network = RPC;
+            // const connection = new Connection(network, 'confirmed');
 
-            // Fetch the latest blockhash
-            const { blockhash } = await connection.getLatestBlockhash({ commitment: "finalized" });
-            transaction.recentBlockhash = blockhash;
-            transaction.feePayer = new PublicKey(walletAddress);
+            // // Fetch the latest blockhash
+            // const { blockhash } = await connection.getLatestBlockhash({ commitment: "finalized" });
+            // transaction.recentBlockhash = blockhash;
+            // transaction.feePayer = new PublicKey(walletAddress);
 
             // Serialize the transaction
             const serializedTx = transaction.serialize({
@@ -134,9 +139,10 @@ export const CanvasWalletProvider = ({ children }: { children: ReactNode }) => {
             // Sign and send the transaction via canvasClient
             const results = await canvasClient.signAndSendTransaction({
                 unsignedTx: base58Tx,
-                awaitCommitment: "none",
+                awaitCommitment: "confirmed",
                 chainId: SOLANA_MAINNET_CHAIN_ID,
             });
+
 
             if (results?.untrusted?.success) {
                 console.log('Transaction signed:', results.untrusted.signedTx);
