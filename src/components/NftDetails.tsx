@@ -12,14 +12,12 @@ import { toWeb3JsTransaction } from '@metaplex-foundation/umi-web3js-adapters';
 import { RPC } from "../requestsHandler";
 import { mplToolbox } from "@metaplex-foundation/mpl-toolbox";
 import { mplCore } from "@metaplex-foundation/mpl-core";
-import { listUserItem } from "../requestsHandler/requestsItems";
+import { getListedItem, listUserItem } from "../requestsHandler/requestsItems";
 
 
 const helius = new Helius("61c2ee69-b100-45d8-81e2-488dc6c4a5f0");
 
-export default function NftDetails({ nft, buy, marketData }: any) {
-
-  console.log(nft);
+export default function NftDetails({ setShowItem, nft, buy, marketData }: any) {
   const [showInputs, setShowInputs] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fee, setFee] = useState('');
@@ -39,13 +37,20 @@ export default function NftDetails({ nft, buy, marketData }: any) {
 
 
   const listItem = async () => {
-
     setLoading(true);
     const rpcAsset: any = await helius.rpc.getAsset({ id: nft.mint })
     const rpcAssetProof: any = await helius.rpc.getAssetProof({ id: nft.mint })
 
-    try {
+    //check if listed at this point and then do not allow listing
+    let response = await getListedItem(nft.mint)
+    if (response?.data?.status == "success") {
+      console.log('NFT already listed');
+      setLoading(false);
+      setShowItem(false)
+      return;
+    }
 
+    try {
       let umiInstruction = await delegate(umi, {
         leafOwner: signer,
         previousLeafDelegate: signer.publicKey,
@@ -77,6 +82,8 @@ export default function NftDetails({ nft, buy, marketData }: any) {
           console.log('NFT successfully listed:', response);
           setLoading(false);
           setShowInputs(false);
+          setShowItem(false)
+
         }
       } else {
         console.log('Failed to sign transaction')

@@ -4,9 +4,6 @@ import useCanvasWallet from "./CanvasWalletAdapter";
 import PersonalItemDisplay from "./PersonalItemDisplay";
 import { fetchListings, fetchUserListings } from "../requestsHandler/requestsItems";
 import NftDetails from "./NftDetails";
-import { Helius } from "helius-sdk";
-
-const helius = new Helius("61c2ee69-b100-45d8-81e2-488dc6c4a5f0");
 
 export default function MarketPlace() {
   const [notify, setNotify] = useState({
@@ -112,7 +109,6 @@ export default function MarketPlace() {
     }
     setListings(items);
   }
-  console.log(selectedNft);
   return (
 
     <main className="pt-[3rem] pb-[5rem] text-white">
@@ -190,7 +186,7 @@ export default function MarketPlace() {
         <div className="absolute h-fit w-screen top-0 left-0 bg-black/50 p-20 flex flex-row justify-center items-center">
           <div className="h-[50%] w-[60%] relative -top-[20%] p-3 px-5 bg-black rounded-xl">
             <p className="text-[30px] cursor-pointer" onClick={() => setShowItem(false)}>x</p>
-            <NftDetails nft={selectedNft?.nftData} buy={true} marketData={selectedNft?.marketplaceData} />
+            <NftDetails setShowItem={setShowItem} nft={selectedNft?.nftData} buy={true} marketData={selectedNft?.marketplaceData} />
           </div>
 
         </div>

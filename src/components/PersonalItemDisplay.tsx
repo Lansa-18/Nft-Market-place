@@ -48,7 +48,7 @@ export default function PersonalItemDisplay({ userNfts, setShowPersonalNFTs }: a
         <div className="absolute h-fit w-screen top-0 left-0 bg-black/50 p-20 flex flex-row justify-center items-center">
           <div className="h-[50%] w-[60%] relative -top-[20%] p-3 px-5 bg-black rounded-xl">
             <p className="text-[30px] cursor-pointer" onClick={() => setShowItem(false)}>x</p>
-            <NftDetails nft={selectedNft} />
+            <NftDetails setShowItem={setShowItem} nft={selectedNft} />
           </div>
 
         </div>
