@@ -131,7 +131,7 @@ export default function MarketPlace() {
           <p onClick={() => setActiveTabs('marketItems')} className={`${activeTabs == "marketItems" && "bg-red-500/40"} px-2 cursor-pointer hover:underline `}>
             Listings
           </p>
-          <p onClick={() => setActiveTabs('personalItems')} className={`px-2 cursor-pointer hover:underline`}>
+          <p onClick={() => setActiveTabs('personalItems')} className={`${activeTabs == "personalItems" && "bg-red-500/40"} px-2 cursor-pointer hover:underline`}>
             My Listings
           </p>
           <p onClick={() => {
