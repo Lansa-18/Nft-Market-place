@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import useCanvasWallet from "./CanvasWalletAdapter";
 import PersonalItemDisplay from "./PersonalItemDisplay";
-import { fetchListings, fetchUserListings } from "../requestsHandler/requestsItems";
+import { fetchListings, fetchUserListings, getListedItem } from "../requestsHandler/requestsItems";
 import NftDetails from "./NftDetails";
 
 export default function MarketPlace() {
@@ -67,7 +67,12 @@ export default function MarketPlace() {
         const nfts = await shyft.nft.compressed.readAll({
           walletAddress: walletAddress
         })
-        setUserNfts(nfts);
+        let items = nfts.map(async (item) => {
+          let response = await getListedItem(item?.mint)
+          if (response?.data?.status != "success") { return item; }
+        })
+
+        setUserNfts(items);
       }
     } else {
       const nfts = await shyft.nft.compressed.readAll({
@@ -123,10 +128,10 @@ export default function MarketPlace() {
 
       <div className="mb-3 flex flex-col  space-y-1">
         <div className="flex flex-row gap-x-3 font-bold text-[12px] divide-x">
-          <p onClick={() => setActiveTabs('marketItems')} className="px-2 cursor-pointer hover:underline ">
+          <p onClick={() => setActiveTabs('marketItems')} className={`${activeTabs == "marketItems" && "bg-red-500/40"} px-2 cursor-pointer hover:underline `}>
             Listings
           </p>
-          <p onClick={() => setActiveTabs('personalItems')} className="px-2 cursor-pointer hover:underline">
+          <p onClick={() => setActiveTabs('personalItems')} className={`px-2 cursor-pointer hover:underline`}>
             My Listings
           </p>
           <p onClick={() => {
@@ -167,8 +172,8 @@ export default function MarketPlace() {
             }
 
           </section>
-
-          : <div className="text-[24px] h-[300px] flex flex-col justify-center items-center">No Items Listed Yet!
+          : <div className="text-[24px] h-[300px] flex flex-col justify-center items-center">
+            {activeTabs == "marketItems" ? "No Items in Market Yet" : "You have no listed Item!"}
             <button onClick={() => {
               setShowPersonalNFTs(true);
               getUserNFTs();
@@ -178,6 +183,7 @@ export default function MarketPlace() {
           </div>
         }
       </div>
+
       {showPersonalNFTs &&
         <PersonalItemDisplay userNfts={userNfts} setShowPersonalNFTs={setShowPersonalNFTs} />
       }
