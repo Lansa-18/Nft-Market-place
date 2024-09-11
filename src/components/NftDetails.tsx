@@ -9,7 +9,7 @@ import { Helius } from "helius-sdk";
 import { createNoopSigner, createSignerFromKeypair, publicKey, publicKeyBytes, signerIdentity, } from "@metaplex-foundation/umi";
 import { toWeb3JsTransaction } from '@metaplex-foundation/umi-web3js-adapters';
 import { RPC } from "../requestsHandler";
-import { mplToolbox, } from "@metaplex-foundation/mpl-toolbox";
+import { addMemo, mplToolbox, } from "@metaplex-foundation/mpl-toolbox";
 import { mplCore } from "@metaplex-foundation/mpl-core";
 import { checkListedItem, listUserItem } from "../requestsHandler/requestsItems";
 import { Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
@@ -25,7 +25,6 @@ export default function NftDetails({ setShowItem, nft, buy, marketData }: any) {
   const wallet = useCanvasWallet()
 
   const umi = createUmi(RPC).use(mplBubblegum())
-
   umi.use(mplCore())
   umi.use(mplToolbox())
   // // Generate a new keypair signer.
@@ -56,7 +55,7 @@ export default function NftDetails({ setShowItem, nft, buy, marketData }: any) {
     }
 
     try {
-      let umiInstruction = delegate(umi, {
+      let umiInstruction = await delegate(umi, {
         leafOwner: signer,
         previousLeafDelegate: signer.publicKey,
         newLeafDelegate: publicKey('CRpqwicZAaK5UsvgPFHPqYpJk39XbYAVkc2edkHAWPK1'),
@@ -67,7 +66,9 @@ export default function NftDetails({ setShowItem, nft, buy, marketData }: any) {
         nonce: rpcAsset.compression.leaf_id,
         index: rpcAssetProof.node_index - 2 ** rpcAssetProof.proof.length,
         proof: rpcAssetProof.proof,
-      }).getInstructions();
+      })
+        .add(addMemo(umi, { memo: `You are currently Listing this ${nft?.name} to D-groov market place` }))
+        .getInstructions();
 
       const transaction = umi.transactions.create({
         version: 0,

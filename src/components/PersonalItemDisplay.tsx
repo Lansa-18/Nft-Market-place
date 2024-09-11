@@ -9,12 +9,12 @@ export default function PersonalItemDisplay({ userNfts, setShowPersonalNFTs }: a
 
   return (
     <div className="bg-black/50 left-0 h-screen overflow-scroll w-screen top-0 fixed">
-      <div className="w-screen flex flex-row justify-center items-center py-3">
+      <div className="w-screen flex flex-row justify-center z-50 items-center py-3">
         <div className="font-bold bg-[#e53d75] p-2 rounded-lg  right-[50%] text-[20px] text-red-200 cursor-pointer" onClick={() => setShowPersonalNFTs(false)}>Close</div>
       </div>
 
       {userNfts.length > 0 ?
-        <section className="absolute m-auto top-0 h-fit overflow-scroll  left-0 p-20 grid grid-cols-5 gap-4 mt-[3rem]">
+        <section className="absolute m-auto  top-0 h-fit overflow-scroll  left-0  p-20 pt-10 mt-20 grid grid-cols-5 gap-4 mt-[3rem]">
 
           {userNfts.map((nft: any, index: number) => {
             return (

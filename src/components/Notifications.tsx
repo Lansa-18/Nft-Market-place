@@ -3,26 +3,46 @@ import useCanvasWallet from "./CanvasWalletAdapter";
 
 
 export default function Notifications() {
+  const [menu, showMenu] = useState(false);
   const wallet = useCanvasWallet()
-  const [connected, setConnected] = useState(false);
 
   const connectWallet = async () => {
     try {
-      let itemConnected = await wallet.connectWallet();
-      if (itemConnected) {
-        setConnected(true);
-      }
+      await wallet.connectWallet();
+
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   }
   return (
-    <div className='flex items-center'>
+    <div className='flex relative items-center'>
       <button onClick={() => {
-        connectWallet();
+        showMenu(true);
+        setTimeout(() => {
+          showMenu(false);
+        }, 3000)
       }} className="text-white w-fit p-2 rounded-xl text-[1.5rem] font-semibold shadow hover:bg-[#e53d75]/90 bg-[#e53d75]">
-        {connected ? "Connected" : "Connect Wallet"}
+        {wallet.walletAddress ? `${wallet.walletAddress.slice(0, 4)}...${wallet.walletAddress.slice(-4)}` : "Connect Wallet"}
       </button>
+      {menu &&
+        <div className=" absolute bg-[#e53d75] p-4  rounded-xl font-bold  text-white top-[40px]">
+          <p className="cursor-pointer" onClick={() => {
+            connectWallet();
+          }} >
+            Copy address
+          </p>
+          <p className="cursor-pointer" onClick={() => {
+            connectWallet();
+          }}>
+            Disconnect
+          </p>
+          <p className="cursor-pointer" onClick={() => {
+            connectWallet();
+          }}>
+            Change Wallet
+          </p>
+        </div>
+      }
     </div>
   )
 }
