@@ -8,8 +8,10 @@ export default function Notifications() {
 
   const connectWallet = async () => {
     try {
-      await wallet.connectWallet();
-      setConnected(true);
+      let itemConnected = await wallet.connectWallet();
+      if (itemConnected) {
+        setConnected(true);
+      }
     } catch (error) {
       console.error(error);
     }

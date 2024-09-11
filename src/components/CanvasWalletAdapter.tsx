@@ -32,7 +32,9 @@ interface WalletContextType {
     marketSDK: ShyftSdk;
     userInfo: { id: string; username: string; avatar?: string | undefined; } | undefined;
     publicKey: PublicKey;
-    content: { id: string; portalId: string; portalName: string; } | undefined
+    content: { id: string; portalId: string; portalName: string; } | undefined;
+    update: any;
+    makeRefetch: () => void;
 }
 
 const WalletContext = createContext<WalletContextType | null>(null);
@@ -43,6 +45,8 @@ const SOLANA_MAINNET_CHAIN_ID = "solana:101"; // Solana mainnet chain ID
 export const CanvasWalletProvider = ({ children }: { children: ReactNode }) => {
     const [canvasClient, setCanvasClient] = useState<CanvasClient | null>(null);
     const [walletAddress, setWalletAddress] = useState<string | null>(localStorage.getItem('walletAddress') || null);
+
+    const [update, setUpdate] = useState<string | null>('')
     const [walletIcon, setWalletIcon] = useState<string | null>(null);
     const [iframe, setIframe] = useState<boolean>(false);
     const [userInfo, setUserInfo] = useState<{ id: string; username: string; avatar?: string | undefined; }>();
@@ -247,6 +251,11 @@ export const CanvasWalletProvider = ({ children }: { children: ReactNode }) => {
 
     const publicKey = !walletAddress ? null : new PublicKey(walletAddress);
 
+
+    const makeRefetch = () => {
+        setUpdate(Math.random().toString());
+    }
+
     const value: WalletContextType = {
         connectWallet,
         walletAddress,
@@ -259,6 +268,8 @@ export const CanvasWalletProvider = ({ children }: { children: ReactNode }) => {
         marketSDK,
         content,
         publicKey,
+        update,
+        makeRefetch,
     };
 
     return (

@@ -56,11 +56,11 @@ export default function Main() {
         }
       </div>
 
-      <div className="mb-3 flex flex-col justify-center items-center space-y-1">
-        <p className="camar-text text-[20px]">welcome to</p>
+      <div className="mb-3 flex flex-col justify-center leading-tight items-center space-y-1">
+        <p className="text-[20px] camar-text text-[#fdefd8]">welcome to</p>
         <h2 className="text-[100px] text-[#fdefd8] text-center font-extrabold camar-text">D-Grovv</h2>
-        <p className="text-[18px]   text-center camar-text w-6/12">
-          Create custom marketplace for your NFT's
+        <p className="text-[18px] text-[#fdefd8]   text-center camar-text w-6/12">
+          Sell and Buy your NFT's right here on DSCVR, using the D-Groovv instant market place.
         </p>
 
         <div className="flex flex-row  p-2 justify-center gap-x-2">
@@ -68,6 +68,11 @@ export default function Main() {
           <Link to="/market-place" className="p-3  shadow text-white rounded-xl text-[1.5rem] font-semibold hover:bg-[#e53d75]/90 bg-[#e53d75]">
             Enter Market Place
           </Link>
+        </div>
+
+        <div className="text-black text-center py-10 bg-white mt-10 ">
+          <p className="">Market place is currently on mainnet, all transactions are real! trade wisely.</p>
+          <p className="">How does it work, on listing you assign delegation to our contract address which handles sale for you!, we take 5% for all successfull sale,listing and unlisting is free and you'll only need to pay transaction fees.</p>
         </div>
       </div>
 

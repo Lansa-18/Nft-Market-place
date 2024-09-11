@@ -9,10 +9,14 @@ export default function PersonalItemDisplay({ userNfts, setShowPersonalNFTs }: a
 
   return (
     <div className="bg-black/50 left-0 h-screen overflow-scroll w-screen top-0 fixed">
-      <div className="font-bold bg-[#e53d75] p-2 rounded-lg absolute z-50 top-5 right-[50%] text-[20px] text-red-200 cursor-pointer" onClick={() => setShowPersonalNFTs(false)}>Close</div>
-      <section className="absolute top-0 h-fit overflow-scroll  left-0 p-20 grid grid-cols-5 gap-4 mt-[3rem]">
-        {userNfts.length > 0 ?
-          userNfts.map((nft: any, index: number) => {
+      <div className="w-screen flex flex-row justify-center items-center py-3">
+        <div className="font-bold bg-[#e53d75] p-2 rounded-lg  right-[50%] text-[20px] text-red-200 cursor-pointer" onClick={() => setShowPersonalNFTs(false)}>Close</div>
+      </div>
+
+      {userNfts.length > 0 ?
+        <section className="absolute m-auto top-0 h-fit overflow-scroll  left-0 p-20 grid grid-cols-5 gap-4 mt-[3rem]">
+
+          {userNfts.map((nft: any, index: number) => {
             return (
               <article key={index} onClick={() => {
                 setSelectedNft(nft)
@@ -35,19 +39,22 @@ export default function PersonalItemDisplay({ userNfts, setShowPersonalNFTs }: a
               </article>
             )
           })
-          :
-          // <div className="text-center w-screen left-0 flex flex-row justify-center items-center">
-          <p className="text-[#fdefd8]  w-[100%] border text-[20px] font-bold">No NFTs found!</p>
-          // </div>
-        }
+          }
+        </section>
+        :
+        <div className="text-center w-[700px] h-screen  flex flex-row justify-center items-center">
+          <p className="text-[#fdefd8] w-[100%] bg-black  text-[20px] font-bold">No cNFT's found in your wallet!</p>
+        </div>
+      }
 
-      </section>
 
 
       {showItem &&
         <div className="absolute h-fit w-screen top-0 left-0 bg-black/50 p-20 flex flex-row justify-center items-center">
-          <div className="h-[50%] w-[60%] relative -top-[20%] p-3 px-5 bg-black rounded-xl">
-            <p className="text-[30px] cursor-pointer" onClick={() => setShowItem(false)}>x</p>
+          <div className="h-[50%] w-[100%] relative -top-[20%] p-3 px-5 bg-black rounded-xl">
+            <div className="w-[100%] flex flex-col items-end">
+              <p className="text-[14px] bg-red-500 rounded-xl p-2 cursor-pointer" onClick={() => setShowItem(false)}>x</p>
+            </div>
             <NftDetails setShowItem={setShowItem} nft={selectedNft} />
           </div>
 
