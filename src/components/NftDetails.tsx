@@ -92,6 +92,8 @@ export default function NftDetails({ setShowItem, nft, buy, marketData }: any) {
           setLoading(false);
           setShowInputs(false);
           setShowItem(false)
+          wallet.makeRefetch()
+
 
         }
       } else {
@@ -142,7 +144,7 @@ export default function NftDetails({ setShowItem, nft, buy, marketData }: any) {
 
       if (txHash) {
 
-        const private_key = [93, 30, 107, 218, 222, 115, 245, 169, 147, 106, 125, 6, 149, 94, 97, 51, 23, 79, 37, 199, 90, 51, 213, 238, 167, 193, 40, 242, 9, 139, 106, 227, 169, 204, 151, 195, 69, 210, 183, 228, 193, 167, 213, 242, 200, 144, 105, 19, 194, 106, 61, 213, 196, 182, 102, 50, 243, 54, 100, 225, 178, 71, 85, 4]
+        const private_key = ""
 
         let arr = Uint8Array.from(private_key.splice(0, 32));
         const signerKey = Keypair.fromSeed(arr);
@@ -157,9 +159,7 @@ export default function NftDetails({ setShowItem, nft, buy, marketData }: any) {
         const signer = createSignerFromKeypair(newumi, myKeypair);
 
         // // Tell Umi to use the new signer.
-        umi.use(signerIdentity(signer))
-
-        console.log(rpcAsset, rpcAssetProof)
+        newumi.use(signerIdentity(signer))
 
         let umiInstruction = await transfer(newumi, {
           merkleTree: rpcAssetProof.tree_id,
@@ -172,13 +172,15 @@ export default function NftDetails({ setShowItem, nft, buy, marketData }: any) {
           leafOwner: publicKey(marketData.owner),
           leafDelegate: publicKey('CRpqwicZAaK5UsvgPFHPqYpJk39XbYAVkc2edkHAWPK1'),
           newLeafOwner: publicKey(wallet.walletAddress),
-        }).sendAndConfirm(umi);
+        }).sendAndConfirm(newumi);
 
         if (umiInstruction.result) {
           console.log('NFT successfully listed:');
           setLoading(false);
           setShowInputs(false);
           setShowItem(false)
+          wallet.makeRefetch()
+
         }
       } else {
         console.log('Failed to sign transaction')
@@ -232,14 +234,14 @@ export default function NftDetails({ setShowItem, nft, buy, marketData }: any) {
             </div>
           }
           {buy ?
-            <button onClick={() => buyItemTransaction()} className="p-3 rounded-xl w-10/12 text-[1.5rem] font-semibold bg-[#e53d75] btn btn-secondary">
+            <button disabled={loading} onClick={() => buyItemTransaction()} className="p-3 rounded-xl w-10/12 text-[1.5rem] font-semibold bg-[#e53d75] btn btn-secondary">
               {loading ? "Loading..." : <>
                 Buy {marketData?.fee}
               </>
               }
             </button>
             :
-            <button onClick={() => showInputs ? listItem() : setShowInputs(true)
+            <button disabled={loading} onClick={() => showInputs ? listItem() : setShowInputs(true)
             } className="p-3 rounded-xl w-10/12 text-[1.5rem] font-semibold bg-[#e53d75] btn btn-secondary">
               {loading ? "Loading..." : <>
                 {showInputs ? "Proceed" : "List Item"}

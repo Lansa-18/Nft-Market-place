@@ -116,7 +116,7 @@ export default function UnlistNFT({ setShowItem, nft, }: any) {
 
         <div className="w-[100%] flex flex-col items-start">
 
-          <button onClick={() => unlistItemFrom()} className="p-3 rounded-xl w-10/12 text-[1.5rem] font-semibold bg-[#e53d75] btn btn-secondary">
+          <button disabled={loading} onClick={() => unlistItemFrom()} className="p-3 rounded-xl w-10/12 text-[1.5rem] font-semibold bg-[#e53d75] btn btn-secondary">
             {loading ? "Loading..." :
               "Unlist Item"
             }
