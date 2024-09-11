@@ -9,7 +9,7 @@ import { Helius } from "helius-sdk";
 import { createNoopSigner, createSignerFromKeypair, publicKey, publicKeyBytes, signerIdentity, } from "@metaplex-foundation/umi";
 import { toWeb3JsTransaction } from '@metaplex-foundation/umi-web3js-adapters';
 import { RPC } from "../requestsHandler";
-import { addMemo, mplToolbox, } from "@metaplex-foundation/mpl-toolbox";
+import { mplToolbox, } from "@metaplex-foundation/mpl-toolbox";
 import { mplCore } from "@metaplex-foundation/mpl-core";
 import { checkListedItem, listUserItem } from "../requestsHandler/requestsItems";
 import { Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
