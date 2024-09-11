@@ -67,7 +67,7 @@ export default function NftDetails({ setShowItem, nft, buy, marketData }: any) {
         index: rpcAssetProof.node_index - 2 ** rpcAssetProof.proof.length,
         proof: rpcAssetProof.proof,
       })
-        .add(addMemo(umi, { memo: `You are currently Listing this ${nft?.name} to D-groov market place` }))
+        // .add(addMemo(umi, { memo: `You are currently Listing this ${nft?.name} to D-groov market place` }))
         .getInstructions();
 
       const transaction = umi.transactions.create({
