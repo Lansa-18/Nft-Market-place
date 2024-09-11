@@ -17,7 +17,8 @@ export default function Notifications() {
   return (
     <div className='flex relative items-center'>
       <button onClick={() => {
-        showMenu(true);
+        !wallet.walletAddress ?
+          showMenu(true) : connectWallet();
       }} className="text-white w-fit p-2 rounded-xl text-[1.5rem] font-semibold shadow hover:bg-[#e53d75]/90 bg-[#e53d75]">
         {wallet.walletAddress ? `${wallet.walletAddress.slice(0, 4)}...${wallet.walletAddress.slice(-4)}` : "Connect Wallet"}
       </button>
