@@ -65,7 +65,7 @@ export default function MarketPlace() {
         }
       }
     })()
-  }, [activeTabs, update])
+  }, [activeTabs, update, walletAddress])
 
   const getUserNFTs = async () => {
     if (!walletAddress) {

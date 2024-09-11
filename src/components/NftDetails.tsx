@@ -11,7 +11,7 @@ import { toWeb3JsTransaction } from '@metaplex-foundation/umi-web3js-adapters';
 import { RPC } from "../requestsHandler";
 import { mplToolbox, } from "@metaplex-foundation/mpl-toolbox";
 import { mplCore } from "@metaplex-foundation/mpl-core";
-import { getListedItem, listUserItem } from "../requestsHandler/requestsItems";
+import { checkListedItem, listUserItem } from "../requestsHandler/requestsItems";
 import { Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 
 
@@ -28,13 +28,10 @@ export default function NftDetails({ setShowItem, nft, buy, marketData }: any) {
 
   umi.use(mplCore())
   umi.use(mplToolbox())
-  // umi.use(walletAdapterIdentity(wallet))
   // // Generate a new keypair signer.
   const signer = createNoopSigner(publicKey(wallet.walletAddress));
-
   // // Tell Umi to use the new signer.
   umi.use(signerIdentity(signer))
-
 
   const listItem = async () => {
     setLoading(true);
@@ -50,7 +47,7 @@ export default function NftDetails({ setShowItem, nft, buy, marketData }: any) {
 
 
     //check if listed at this point and then do not allow listing
-    let response = await getListedItem(nft.mint)
+    let response = await checkListedItem(nft.mint, wallet.walletAddress)
     if (response?.data?.status == "success") {
       console.log('NFT already listed');
       setLoading(false);
@@ -59,7 +56,7 @@ export default function NftDetails({ setShowItem, nft, buy, marketData }: any) {
     }
 
     try {
-      let umiInstruction = await delegate(umi, {
+      let umiInstruction = delegate(umi, {
         leafOwner: signer,
         previousLeafDelegate: signer.publicKey,
         newLeafDelegate: publicKey('CRpqwicZAaK5UsvgPFHPqYpJk39XbYAVkc2edkHAWPK1'),
@@ -79,11 +76,13 @@ export default function NftDetails({ setShowItem, nft, buy, marketData }: any) {
         payer: signer.publicKey,
       })
 
+
+
       let webTransaction = toWeb3JsTransaction(transaction)
+
 
       // umiInstruction.map((trans) => tx.add(trans));
       let txHash = await wallet.signTransaction(webTransaction)
-
 
       if (txHash) {
         const response = await listUserItem(fee, signer.publicKey, nft.mint);
@@ -111,7 +110,6 @@ export default function NftDetails({ setShowItem, nft, buy, marketData }: any) {
 
   const buyItemTransaction = async () => {
     setLoading(true);
-
     const rpcAsset: any = await helius.rpc.getAsset({ id: nft.mint })
     const rpcAssetProof: any = await helius.rpc.getAssetProof({ id: nft.mint })
 

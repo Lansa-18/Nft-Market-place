@@ -29,6 +29,11 @@ export const getListedItem = async (nft_mint: string) => {
     return response;
 }
 
+export const checkListedItem = async (nft_mint: string, owner: string) => {
+    let response = await request.get(`https://blinks.ytechno.com.ng/api/check-listed-item/${nft_mint}/${owner}`)
+    return response;
+}
+
 export const listUserItem = async (price: string, owner: string, asset: string) => {
     let bodyContent = new FormData();
     bodyContent.append("asset_mint", asset);
