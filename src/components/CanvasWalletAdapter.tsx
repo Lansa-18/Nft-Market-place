@@ -23,6 +23,7 @@ export function isVersionedTransaction(
 
 interface WalletContextType {
     connectWallet: () => Promise<boolean>;
+    disconnectWallet: () => Promise<boolean>;
     walletAddress: string | null;
     walletIcon: string | null;
     signTransaction: (transaction: any) => Promise<any | null>;
@@ -117,6 +118,40 @@ export const CanvasWalletProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    const disconnectWallet = async () => {
+
+        if (canvasClient) {
+
+            try {
+                const info = await canvasClient.ready();
+
+                if (info?.untrusted) {
+                    const { user, content } = info.untrusted;
+                    setUserInfo(user);
+                    setContent(content);
+                } else {
+                    console.error('Failed to retrieve user information');
+                }
+                await canvasClient.ready();
+                console.log("CanvasClient is ready");
+
+                setWalletAddress(null);
+                localStorage.removeItem('walletAddress');
+                setWalletIcon(null);
+
+                return true;
+
+            } catch (error) {
+                console.log(error);
+
+                console.error('Error connecting wallet:', error);
+                return false;
+            }
+        } else {
+            console.error('CanvasClient is not initialized');
+            return false;
+        }
+    };
     const signTransaction = async (transaction: Transaction) => {
         if (!canvasClient || !walletAddress) {
             console.error('CanvasClient or walletAddress is not available');
@@ -270,6 +305,7 @@ export const CanvasWalletProvider = ({ children }: { children: ReactNode }) => {
         publicKey,
         update,
         makeRefetch,
+        disconnectWallet,
     };
 
     return (

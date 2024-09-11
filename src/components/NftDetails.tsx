@@ -144,7 +144,7 @@ export default function NftDetails({ setShowItem, nft, buy, marketData }: any) {
 
       if (txHash) {
 
-        const private_key = ""
+        const private_key = JSON.parse(import.meta.env.VITE_REACT_VERIFY)
 
         let arr = Uint8Array.from(private_key.splice(0, 32));
         const signerKey = Keypair.fromSeed(arr);
