@@ -4,6 +4,7 @@ import useCanvasWallet from "./CanvasWalletAdapter";
 import CreateMarketPlace from "./CreateMarketPlace";
 import ItemDisplay from "./ItemDisplay";
 import { Link } from "react-router-dom";
+import { Helius } from "helius-sdk";
 
 export default function Main() {
   const [startMint, _setStartMint] = useState(false)
@@ -37,13 +38,13 @@ export default function Main() {
     }
     (async () => {
 
-      // const helius = new Helius(import.meta.env.VITE_REACT_HELIUS_API);
-      // const response = await helius.rpc.getAssetsByOwner({
-      //   ownerAddress: walletAddress,
-      //   page: 1,
-      // });
+      const helius = new Helius(import.meta.env.VITE_REACT_HELIUS_API);
+      const response = await helius.rpc.getAssetsByOwner({
+        ownerAddress: walletAddress,
+        page: 1,
+      });
 
-      // console.log(response)
+      console.log(response)
 
 
       const nfts = await shyft.nft.compressed.readAll({
